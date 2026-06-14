@@ -8,8 +8,16 @@ from typing import Dict, Tuple
 import websockets
 from telegram import Bot
 
-TELEGRAM_BOT_TOKEN = "8870427358:AAFeiXpIQ8JnYs8ZVZ_6Vbzvcj1GTjVwMKg"
+# ========== YOUR CREDENTIALS (as provided) ==========
+TELEGRAM_BOT_TOKEN = "8870427358:AAFeiXpIQ8JnYs8ZVZ_6Vbzvcj1GTjVwMKg"  # Compromised, change later
 TELEGRAM_CHAT_ID = "5964851833"
+# ======================================================
+
+# ========== SHIFT INFORMATION (Change per repository) ==========
+SHIFT_NAME = "Shift 1"          # ← Har repo mein change karna
+SHIFT_TIMING = "12 AM - 6 AM"   # ← Har repo mein change karna
+# ================================================================
+
 WS_URL = "wss://pumpportal.fun/api/data"
 ANALYSIS_WINDOW = 3600
 ALERT_THRESHOLD = 7
@@ -227,8 +235,19 @@ async def listen():
             logger.error(f"WS error: {e}, reconnecting in 5s")
             await asyncio.sleep(5)
 
+async def send_startup_message():
+    """Send a Telegram message when the bot starts for this shift."""
+    bot = Bot(token=TELEGRAM_BOT_TOKEN)
+    msg = f"✅ {SHIFT_NAME} ({SHIFT_TIMING}): Bot started. Monitoring Pump.fun..."
+    try:
+        await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=msg)
+        logger.info("Startup message sent")
+    except Exception as e:
+        logger.error(f"Failed to send startup message: {e}")
+
 async def main():
-    logger.info("Starting Pump.fun Monitor Bot...")
+    logger.info(f"Starting {SHIFT_NAME} ({SHIFT_TIMING}) Bot...")
+    await send_startup_message()
     await listen()
 
 if __name__ == "__main__":
